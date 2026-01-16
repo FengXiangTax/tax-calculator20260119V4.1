@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>连续劳务个税计算器（2025个税新规版）- 烽享财税</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            margin: 0;
+            padding: 15px;
+            color: #333;
+            line-height: 1.6;
+            -webkit-text-size-adjust: 100%;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+        }
+        
+        .share-hint {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .share-hint::after {
+            content: "↗";
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #fff9e6 0%, #fff0b3 100%);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23facc15" opacity="0.2" d="M50,10 L90,50 L50,90 L10,50 Z"/><circle cx="50" cy="50" r="30" fill="%23facc15" opacity="0.2"/><rect x="40" y="40" width="20" height="20" fill="%23facc15" opacity="0.3"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1;
+        }
+        
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo-text .chinese {
+            font-size: 18px;
+            font-weight: 800;
+            color: #1a1a1a;
+            line-height: 1.2;
+        }
+        
+        .logo-text .english {
+            font-size: 12px;
+            color: #666;
+            letter-spacing: 0.5px;
+        }
+        
+        h1 {
+            font-size: 20px;
+            color: #ff6b00;
+            margin: 0;
+            font-weight: 800;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            z-index: 1;
+            line-height: 1.3;
+        }
+        
+        .panel {
+            background: #fff;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .panel:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+        }
+        
+        .tax-info-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #facc15;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(250, 204, 21, 0.1);
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .tax-info-link:hover {
+            background: rgba(250, 204, 21, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+            font-size: 15px;
+        }
+        
+        .input-with-unit {
+            position: relative;
+            max-width: 300px;
+        }
+        
+        .input-with-unit input {
+            padding: 14px 40px 14px 16px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            width: 100%;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+        }
+        
+        .input-with-unit .unit {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 14px;
+        }
+        
+        input:focus {
+            border-color: #facc15;
+            box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2);
+            outline: none;
+        }
+        
+        .months-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .month {
+            padding: 14px 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 14px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .month:hover {
+            background: #f8f8f8;
+        }
+        
+        .month.active {
+            background: #facc15;
+            color: #000;
+            font-weight: 600;
+            border-color: #facc15;
+            box-shadow: 0 2px 6px rgba(250, 204, 21, 0.3);
+        }
+        
+        .month.current-month {
+            border: 2px solid #ff6b00;
+        }
+        
+        .actions {
+            margin-top: 25px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #f0f0f0;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 15px;
+            flex: 1;
+            min-width: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn.primary {
+            background: #facc15;
+            color: #000;
+            font-weight: 600;
+        }
+        
+        .btn.primary:hover {
+            background: #f8c000;
+            box-shadow: 0 3px 8px rgba(250, 204, 21, 0.4);
+        }
+        
+        .note {
+            font-size: 12px;
+            color: #888;
+            margin-top: 15px;
+            line-height: 1.5;
+            text-align: center;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 13px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            table-layout: fixed;
+        }
+        
+        th, td {
+            border: 1px solid #eaeaea;
+            padding: 10px 6px;
+            text-align: center;
+            word-wrap: break-word;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        thead {
+            background: #f8f9fa;
+        }
+        
+        th {
+            font-weight: 600;
+            color: #444;
+            font-size: 12px;
+            padding: 12px 6px;
+        }
+        
+        tfoot {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        tbody tr.highlight {
+            background: #fff9e6 !important;
+        }
+        
+        tbody tr.has-income {
+            background: #fff9e6 !important;
+        }
+        
+        tbody tr:hover {
+            background: #f0f7ff;
+        }
+        
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            padding: 15px 0;
+        }
+        
+        /* 备案信息样式 */
+        .beian-info {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .beian-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .beian-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .beian-item:hover {
+            color: #facc15;
+        }
+        
+        .beian-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .beian-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .copyright {
+            margin-top: 10px;
+            color: #999;
+        }
+        
+        .company-slogan {
+            font-size: 14px;
+            color: #facc15;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s;
+            position: relative;
+            box-sizing: border-box;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        
+        .close-btn {
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #888;
+            transition: color 0.3s;
+            padding: 5px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .close-btn:hover {
+            color: #333;
+        }
+        
+        .modal-body {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .modal-body h4 {
+            margin: 15px 0 8px;
+            color: #1a1a1a;
+            font-size: 16px;
+        }
+        
+        .modal-body h5 {
+            margin: 12px 0 6px;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .modal-body p, .modal-body ul {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+        
+        .modal-body ul {
+            padding-left: 18px;
+        }
+        
+        .modal-body li {
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+        
+        .modal-table {
+            width: 100%;
+            margin: 12px 0;
+            border-collapse: collapse;
+            font-size: 12px;
+            table-layout: fixed;
+        }
+        
+        .modal-table th, .modal-table td {
+            border: 1px solid #e0e0e0;
+            padding: 8px 4px;
+            text-align: center;
+            word-wrap: break-word;
+        }
+        
+        .modal-table thead {
+            background: #f8f9fa;
+        }
+        
+        /* 月份收入输入弹窗样式 */
+        .month-inputs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .month-input {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .month-input label {
+            margin-bottom: 5px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .month-input .input-with-unit {
+            max-width: 100%;
+        }
+        
+        .month-input input {
+            font-size: 15px;
+            padding: 12px 40px 12px 12px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* 计税依据说明样式 */
+        .tax-basis {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .tax-reference {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #facc15;
+            font-weight: 700;
+            text-align: center;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            
+            .container {
+                padding: 0;
+            }
+            
+            .share-hint {
+                top: 5px;
+                right: 5px;
+                font-size: 10px;
+                padding: 4px 8px;
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 12px;
+                padding: 18px;
+            }
+            
+            h1 {
+                font-size: 18px;
+                text-align: center;
+            }
+            
+            .panel {
+                padding: 18px;
+                margin-bottom: 18px;
+            }
+            
+            .months-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+            
+            .month {
+                padding: 12px 6px;
+                font-size: 13px;
+            }
+            
+            .actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .btn {
+                width: 100%;
+                padding: 16px 20px;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 8px 4px;
+                font-size: 11px;
+            }
+            
+            .modal-content {
+                margin: 5% auto;
+                padding: 18px;
+            }
+            
+            .month-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .beian-links {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            
+            h1 {
+                font-size: 16px;
+            }
+            
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            
+            .logo-text .chinese {
+                font-size: 16px;
+            }
+            
+            .logo-text .english {
+                font-size: 11px;
+            }
+            
+            .panel {
+                padding: 15px;
+            }
+            
+            .months-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .month {
+                padding: 10px 4px;
+                font-size: 12px;
+            }
+            
+            table {
+                font-size: 11px;
+            }
+            
+            th, td {
+                padding: 6px 3px;
+                font-size: 10px;
+            }
+            
+            /* 针对小屏手机的表格优化 */
+            @media (max-width: 360px) {
+                .months-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                
+                table {
+                    font-size: 10px;
+                }
+                
+                th, td {
+                    padding: 5px 2px;
+                    font-size: 9px;
+                }
+            }
+        }
+        
+        /* 防止iOS缩放 */
+        input[type="number"] {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        /* 优化触摸体验 */
+        @media (hover: none) and (pointer: coarse) {
+            .btn:hover, .month:hover, .tax-info-link:hover {
+                transform: none;
+            }
+            
+            .btn:active, .month:active, .tax-info-link:active {
+                transform: scale(0.98);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 分享提示 -->
+        <div class="share-hint">点击上方···分享</div>
+        
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <!-- 顶部LOGO：已修改为使用images/fengxiangtaxlogo.png -->
+                    <img src="images/fengxiangtaxlogo.png" alt="烽享财税">
+                </div>
+                <div class="logo-text">
+                    <div class="chinese">烽享财税</div>
+                    <div class="english">FengXiangTax</div>
+                </div>
+            </div>
+            <h1>连续劳务个税计算器（2025个税新规版）</h1>
+        </header>
+
+        <section class="panel">
+            <div class="tax-info-link" onclick="openTaxInfo()">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 1C4.13401 1 1 4.13401 1 8C1 11.866 4.13401 15 8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1Z" stroke="#facc15" stroke-width="1.5"/>
+                    <path d="M8 11V8" stroke="#facc15" stroke-width="1.5" stroke-linecap="round"/>
+                    <circle cx="8" cy="5.5" r="0.5" fill="#facc15"/>
+                </svg>
+                点我查看计税依据
+            </div>
+
+            <div class="input-group">
+                <label for="defaultIncome">灵活就业者收入（元）</label>
+                <div class="input-with-unit">
+                    <input id="defaultIncome" type="number" value="10000" min="0" placeholder="请输入灵活就业者收入金额" />
+                    <span class="unit">元</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>请选择月份</label>
+                <div class="months-grid" id="monthsGrid"></div>
+            </div>
+
+            <div class="actions">
+                <button class="btn primary" onclick="startCalc()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 15L15 12L10 9V15Z" fill="currentColor"/>
+                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor"/>
+                    </svg>
+                    开始计算
+                </button>
+                <button class="btn" onclick="clearAll()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+                    </svg>
+                    清空
+                </button>
+                <button class="btn" onclick="selectAll()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="currentColor"/>
+                    </svg>
+                    全部选中
+                </button>
+                <button class="btn primary" onclick="openMonthInputModal()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM9 17H7V10H9V17ZM13 17H11V7H13V17ZM17 17H15V13H17V17Z" fill="currentColor"/>
+                    </svg>
+                    月金额不同点我计算
+                </button>
+            </div>
+        </section>
+
+        <section class="panel" id="resultPanel" style="display:none">
+            <h3 style="margin-bottom: 15px; text-align: center;">计算结果</h3>
+            <table id="resultTable">
+                <thead>
+                    <tr>
+                        <th style="width: 20%;">月份</th>
+                        <th style="width: 20%;">税前</th>
+                        <th style="width: 20%;">应预扣</th>
+                        <th style="width: 20%;">税后</th>
+                        <th style="width: 20%;">税负</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <td>总计</td>
+                        <td id="totalPre">0</td>
+                        <td id="totalTax">0</td>
+                        <td id="totalAfter">0</td>
+                        <td id="totalRate">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="note">计算结果仅供参考，具体以个人实际情况及税局相关文件为准。</div>
+        </section>
+
+        <!-- 备案信息部分 -->
+        <div class="beian-info">
+            <div class="company-slogan">烽享财税 —— 一站式企业财税综合服务平台</div>
+            
+            <div class="beian-links">
+                <a href="https://beian.mps.gov.cn/#/query/webSearch" target="_blank" class="beian-item">
+                    <div class="beian-icon">
+                        <!-- 公安备案图标：已修改为使用images/beian.png -->
+                        <img src="images/beian.png" alt="公安备案图标">
+                    </div>
+                    粤公网安备 44010602011937号
+                </a>
+                
+                <div class="beian-item">
+                    粤ICP备 2024339069号
+                </div>
+            </div>
+            
+            <div class="copyright">
+                烽享财税 版权所有 Copyright © 2023 FengXiangTax.All Rights Reserved
+            </div>
+        </div>
+
+        <!-- 计税依据弹窗 -->
+        <div id="taxInfoModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">计税依据说明</div>
+                    <span class="close-btn" onclick="closeTaxInfo()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <h4>2025年劳务报酬个税计算规则</h4>
+                    <p>根据《个人所得税法》及相关规定，连续劳务报酬个人所得税计算规则如下：</p>
+                    
+                    <h5>1. 计算公式</h5>
+                    <p>累计预扣预缴应纳税所得额 = 累计收入 - 累计减除费用 - 累计专项扣除 - 累计专项附加扣除 - 累计依法确定的其他扣除</p>
+                    
+                    <h5>2. 费用扣除标准</h5>
+                    <ul>
+                        <li>劳务报酬收入减除20%的费用</li>
+                        <li>每月基本减除费用：5,000元</li>
+                    </ul>
+                    
+                    <h5>3. 税率表（年度累计）</h5>
+                    <table class="modal-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">级数</th>
+                                <th style="width: 45%;">全年应纳税所得额</th>
+                                <th style="width: 20%;">税率(%)</th>
+                                <th style="width: 20%;">速算扣除数</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>不超过36,000元</td>
+                                <td>3</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>超过36,000元至144,000元</td>
+                                <td>10</td>
+                                <td>2,520</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>超过144,000元至300,000元</td>
+                                <td>20</td>
+                                <td>16,920</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>超过300,000元至420,000元</td>
+                                <td>25</td>
+                                <td>31,920</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>超过420,000元至660,000元</td>
+                                <td>30</td>
+                                <td>52,920</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>超过660,000元至960,000元</td>
+                                <td>35</td>
+                                <td>85,920</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>超过960,000元</td>
+                                <td>45</td>
+                                <td>181,920</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h5>4. 计算方法</h5>
+                    <p>本期应预扣预缴税额 = (累计预扣预缴应纳税所得额 × 预扣率 - 速算扣除数) - 累计已预扣预缴税额</p>
+                    
+                    <div class="tax-basis">
+                        注：本计算器基于2025年个税政策预测，实际执行以国家税务总局最新公告为准。
+                    </div>
+                    <div class="tax-reference">
+                        依据：国家税务总局公告2018年第61号
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 月份收入输入弹窗 -->
+        <div id="monthInputModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">按月输入收入金额</div>
+                    <span class="close-btn" onclick="closeMonthInputModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>请为每个月份输入不同的收入金额（单位：元）：</p>
+                    <div class="month-inputs" id="monthInputsContainer">
+                        <!-- 月份输入框将通过JS动态生成 -->
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn" onclick="closeMonthInputModal()">取消</button>
+                        <button class="btn primary" onclick="applyMonthInputs()">应用并计算</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <!-- 已移动到备案信息上方 -->
+        </footer>
+    </div>
+
+    <script>
+        // 税率表
+        const taxBrackets = [
+            {limit: 36000, rate: 0.03, quick: 0},
+            {limit: 144000, rate: 0.10, quick: 2520},
+            {limit: 300000, rate: 0.20, quick: 16920},
+            {limit: 420000, rate: 0.25, quick: 31920},
+            {limit: 660000, rate: 0.30, quick: 52920},
+            {limit: 960000, rate: 0.35, quick: 85920},
+            {limit: Infinity, rate: 0.45, quick: 181920}
+        ];
+        
+        const monthlyBasicDeduction = 5000;
+        
+        // 存储各月份收入数据
+        let monthIncomes = Array(12).fill(0);
+
+        // 获取当前月份
+        const currentMonth = new Date().getMonth() + 1; // 1-12
+
+        // 初始化月份选择器
+        const monthsGrid = document.getElementById('monthsGrid');
+        for(let i = 1; i <= 12; i++) {
+            const div = document.createElement('div');
+            div.className = 'month';
+            div.dataset.month = i;
+            div.textContent = i + '月';
+            
+            // 如果是当前月份，添加特殊样式
+            if (i === currentMonth) {
+                div.classList.add('current-month');
+            }
+            
+            div.onclick = () => div.classList.toggle('active');
+            monthsGrid.appendChild(div);
+        }
+
+        // 默认选中当前月份
+        window.onload = function() {
+            const currentMonthElement = document.querySelector(`.month[data-month="${currentMonth}"]`);
+            if (currentMonthElement) {
+                currentMonthElement.classList.add('active');
+            }
+            
+            // 初始化月份收入输入框
+            initMonthInputs();
+        };
+
+        const defaultInput = document.getElementById('defaultIncome');
+
+        // 初始化月份收入输入框
+        function initMonthInputs() {
+            const container = document.getElementById('monthInputsContainer');
+            container.innerHTML = '';
+            
+            for(let i = 1; i <= 12; i++) {
+                const monthDiv = document.createElement('div');
+                monthDiv.className = 'month-input';
+                
+                const label = document.createElement('label');
+                label.textContent = i + '月收入';
+                label.htmlFor = `monthIncome${i}`;
+                
+                const inputContainer = document.createElement('div');
+                inputContainer.className = 'input-with-unit';
+                
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.id = `monthIncome${i}`;
+                input.min = '0';
+                input.value = monthIncomes[i-1] || '';
+                input.placeholder = '请输入灵活就业者收入金额';
+                // 添加输入事件监听，实时更新月份选中状态
+                input.addEventListener('input', function() {
+                    updateMonthSelection(i, this.value);
+                });
+                
+                const unit = document.createElement('span');
+                unit.className = 'unit';
+                unit.textContent = '元';
+                
+                inputContainer.appendChild(input);
+                inputContainer.appendChild(unit);
+                
+                monthDiv.appendChild(label);
+                monthDiv.appendChild(inputContainer);
+                container.appendChild(monthDiv);
+            }
+        }
+
+        // 实时更新月份选中状态
+        function updateMonthSelection(month, value) {
+            const monthCell = document.querySelector(`.month[data-month='${month}']`);
+            const numericValue = Number(value);
+            
+            if (!isNaN(numericValue) && numericValue > 0) {
+                // 如果输入了有效正数，自动选中该月份
+                monthCell.classList.add('active');
+            } else {
+                // 如果输入为空或0，取消选中该月份
+                monthCell.classList.remove('active');
+            }
+        }
+
+        // 计算个税
+        function startCalc() {
+            const def = Number(defaultInput.value) || 0;
+            const months = [];
+            
+            // 确保至少有一个月份被选中
+            let hasActiveMonth = false;
+            for(let i = 1; i <= 12; i++) {
+                const cell = document.querySelector(`.month[data-month='${i}']`);
+                const isActive = cell.classList.contains('active');
+                if (isActive) hasActiveMonth = true;
+                
+                // 使用月份特定收入，如果没有则使用默认值
+                const income = monthIncomes[i-1] > 0 ? monthIncomes[i-1] : 
+                              (isActive ? def : 0);
+                
+                months.push({
+                    month: i, 
+                    active: isActive, 
+                    income: income
+                });
+            }
+
+            // 如果没有选中任何月份，提示用户
+            if (!hasActiveMonth) {
+                alert('请至少选择一个月份！');
+                return;
+            }
+
+            let cumulativeIncome = 0, cumulativeTaxPaid = 0, monthsContinuous = 0;
+            const rows = [];
+
+            for(let i = 0; i < 12; i++) {
+                const m = months[i];
+                if(!m.active || m.income <= 0) { 
+                    rows.push({
+                        month: m.month, 
+                        income: 0, 
+                        currentTax: 0, 
+                        after: 0, 
+                        rate: '0%',
+                        hasIncome: false
+                    }); 
+                    monthsContinuous = 0; // 重置连续月份计数
+                    continue; 
+                }
+
+                monthsContinuous++;
+                cumulativeIncome += m.income;
+                const cumulativeExpense = cumulativeIncome * 0.2;
+                const cumulativeDeduction = monthlyBasicDeduction * monthsContinuous;
+                let taxable = cumulativeIncome - cumulativeExpense - cumulativeDeduction;
+                if(taxable < 0) taxable = 0;
+
+                const bracket = taxBrackets.find(b => taxable <= b.limit);
+                const cumulativeTax = taxable * bracket.rate - bracket.quick;
+                const currentTax = cumulativeTax - cumulativeTaxPaid;
+                cumulativeTaxPaid = cumulativeTax;
+
+                const after = m.income - currentTax;
+                const rate = m.income > 0 ? ((currentTax / m.income) * 100).toFixed(2) + '%' : '0%';
+
+                rows.push({
+                    month: m.month, 
+                    income: m.income, 
+                    currentTax: currentTax, 
+                    after: after, 
+                    rate: rate,
+                    hasIncome: true
+                });
+            }
+
+            displayResults(rows);
+        }
+
+        // 显示结果
+        function displayResults(rows) {
+            const tbody = document.querySelector('#resultTable tbody');
+            tbody.innerHTML = '';
+            
+            let totalIncome = 0, totalTax = 0, totalAfter = 0;
+            
+            rows.forEach(r => {
+                const tr = document.createElement('tr');
+                if(r.hasIncome) tr.classList.add('has-income');
+                
+                const incomeStr = r.income.toFixed(2);
+                const taxStr = r.currentTax.toFixed(2);
+                const afterStr = r.after.toFixed(2);
+                
+                tr.innerHTML = `<td>${r.month}月</td>
+                               <td>${incomeStr}</td>
+                               <td>${taxStr}</td>
+                               <td>${afterStr}</td>
+                               <td>${r.rate}</td>`;
+                tbody.appendChild(tr);
+                
+                totalIncome += r.income;
+                totalTax += r.currentTax;
+                totalAfter += r.after;
+            });
+            
+            document.getElementById('totalPre').textContent = totalIncome.toFixed(2);
+            document.getElementById('totalTax').textContent = totalTax.toFixed(2);
+            document.getElementById('totalAfter').textContent = totalAfter.toFixed(2);
+            
+            const taxRate = totalIncome > 0 ? ((totalTax / totalIncome) * 100).toFixed(2) + '%' : '0%';
+            document.getElementById('totalRate').textContent = taxRate;
+            
+            document.getElementById('resultPanel').style.display = 'block';
+        }
+
+        // 清空
+        function clearAll() {
+            monthIncomes = Array(12).fill(0);
+            defaultInput.value = '10000';
+            
+            // 取消所有月份选中
+            document.querySelectorAll('.month').forEach(m => m.classList.remove('active'));
+            
+            // 选中当前月份
+            const currentMonthElement = document.querySelector(`.month[data-month="${currentMonth}"]`);
+            if (currentMonthElement) {
+                currentMonthElement.classList.add('active');
+            }
+            
+            document.getElementById('resultPanel').style.display = 'none';
+        }
+
+        // 全选
+        function selectAll() {
+            document.querySelectorAll('.month').forEach(m => m.classList.add('active'));
+        }
+
+        // 打开月份输入弹窗
+        function openMonthInputModal() {
+            initMonthInputs();
+            document.getElementById('monthInputModal').style.display = 'block';
+        }
+
+        // 关闭月份输入弹窗
+        function closeMonthInputModal() {
+            document.getElementById('monthInputModal').style.display = 'none';
+        }
+
+        // 应用月份输入
+        function applyMonthInputs() {
+            for(let i = 1; i <= 12; i++) {
+                const input = document.getElementById(`monthIncome${i}`);
+                const value = Number(input.value) || 0;
+                monthIncomes[i-1] = value;
+                
+                // 根据输入值更新月份选中状态
+                updateMonthSelection(i, value);
+            }
+            closeMonthInputModal();
+            startCalc();
+        }
+
+        // 打开计税依据弹窗
+        function openTaxInfo() {
+            document.getElementById('taxInfoModal').style.display = 'block';
+        }
+
+        // 关闭计税依据弹窗
+        function closeTaxInfo() {
+            document.getElementById('taxInfoModal').style.display = 'none';
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const taxModal = document.getElementById('taxInfoModal');
+            const monthModal = document.getElementById('monthInputModal');
+            
+            if (event.target == taxModal) {
+                taxModal.style.display = "none";
+            }
+            if (event.target == monthModal) {
+                monthModal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
